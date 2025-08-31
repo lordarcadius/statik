@@ -1,4 +1,4 @@
-package com.vipuljha.statik.ui.theme
+package com.vipuljha.statik.core.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

@@ -1,6 +1,5 @@
-package com.vipuljha.statik.ui.theme
+package com.vipuljha.statik.core.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
