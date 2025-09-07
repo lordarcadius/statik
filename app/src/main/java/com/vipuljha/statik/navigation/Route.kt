@@ -2,6 +2,7 @@ package com.vipuljha.statik.navigation
 
 import kotlinx.serialization.Serializable
 
+@Serializable
 sealed interface Route {
 
     // Top-level routes
@@ -12,6 +13,7 @@ sealed interface Route {
     data object Root : Route
 
     // Root bottom nav destinations
+    @Serializable
     sealed interface RootDestination : Route {
         @Serializable
         data object Dashboard : RootDestination
@@ -27,6 +29,7 @@ sealed interface Route {
     }
 
     // Information tab destinations (inside Information)
+    @Serializable
     sealed interface InfoTabDestination : RootDestination {
         @Serializable
         data object Hardware : InfoTabDestination
