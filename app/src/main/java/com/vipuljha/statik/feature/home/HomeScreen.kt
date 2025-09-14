@@ -7,7 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.vipuljha.statik.feature.dashboard.DashboardScreen
+import com.vipuljha.statik.feature.dashboard.presentation.DashboardScreen
 import com.vipuljha.statik.feature.information.InformationScreen
 import com.vipuljha.statik.feature.settings.SettingScreen
 import com.vipuljha.statik.feature.tools.ToolScreen
