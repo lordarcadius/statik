@@ -1,6 +1,10 @@
 package com.vipuljha.statik.feature.dashboard.data.repository
 
+import com.vipuljha.statik.core.util.Constants.CPU_CORE_REGEX
 import com.vipuljha.statik.core.util.Constants.REALTIME_DATA_FETCH_DELAY
+import com.vipuljha.statik.core.util.Helper.getFakeEmulatorFreqData
+import com.vipuljha.statik.core.util.Helper.isEmulator
+import com.vipuljha.statik.core.util.Helper.readFile
 import com.vipuljha.statik.feature.dashboard.domain.model.PerCoreFreqModel
 import com.vipuljha.statik.feature.dashboard.domain.repository.DashboardRepository
 import kotlinx.coroutines.delay
@@ -20,34 +24,23 @@ class DashboardRepositoryImpl @Inject constructor() : DashboardRepository {
     }
 
     private fun getRealTimePerCoreFrequency(): List<PerCoreFreqModel> {
-        val cpuDir = File("/sys/devices/system/cpu/")
-        val result = mutableListOf<PerCoreFreqModel>()
-
-        cpuDir.listFiles { file -> file.name.matches(Regex("cpu[0-9]+")) }?.forEach { cpuCore ->
-            val coreName = cpuCore.name
-
-            val minFreq = readFile("${cpuCore.absolutePath}/cpufreq/cpuinfo_min_freq")
-            val maxFreq = readFile("${cpuCore.absolutePath}/cpufreq/cpuinfo_max_freq")
-            val curFreq = readFile("${cpuCore.absolutePath}/cpufreq/scaling_cur_freq")
-
-            result.add(
-                PerCoreFreqModel(
-                    core = coreName,
-                    minFrequency = minFreq,
-                    maxFrequency = maxFreq,
-                    currentFrequency = curFreq
-                )
-            )
+        return if (isEmulator()) {
+            getFakeEmulatorFreqData()
+        } else {
+            getDeviceFreqData()
         }
-
-        return result
     }
 
-    private fun readFile(path: String): String {
-        return try {
-            File(path).readText().trim()
-        } catch (e: Exception) {
-            "N/A"
-        }
+    private fun getDeviceFreqData(): List<PerCoreFreqModel> {
+        val cpuDir = File("/sys/devices/system/cpu/")
+        return cpuDir.listFiles { file -> file.name.matches(CPU_CORE_REGEX) }
+            ?.map { cpuCore ->
+                PerCoreFreqModel(
+                    core = cpuCore.name,
+                    minFrequency = readFile("${cpuCore.absolutePath}/cpufreq/cpuinfo_min_freq"),
+                    maxFrequency = readFile("${cpuCore.absolutePath}/cpufreq/cpuinfo_max_freq"),
+                    currentFrequency = readFile("${cpuCore.absolutePath}/cpufreq/scaling_cur_freq")
+                )
+            } ?: emptyList()
     }
 }
