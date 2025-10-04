@@ -7,9 +7,9 @@ import java.util.Locale
 import kotlin.random.Random
 
 object Helper {
-    fun formatFreq(freq: String): String {
+    fun formatFreq(freq: Long): String {
         return try {
-            val khz = freq.toLong()
+            val khz = freq
             val mhz = khz / 1000
             val ghz = mhz / 1000.0
             String.format(Locale.US, "%.2f GHz", ghz)
@@ -45,18 +45,18 @@ object Helper {
 
     fun getFakeEmulatorFreqData(): List<PerCoreFreqModel> {
         val fakeCores = 8
-        val fakeMin = "300000"   // 300 MHz
-        val fakeMax = "4300000"  // 4.3 GHz
+        val fakeMin = 300000L   // 300 MHz
+        val fakeMax = 4300000L  // 4.3 GHz
 
         return List(fakeCores) { index ->
             PerCoreFreqModel(
                 core = "cpu$index",
                 minFrequency = fakeMin,
                 maxFrequency = fakeMax,
-                currentFrequency = Random.nextInt(
-                    fakeMin.toInt(),
-                    fakeMax.toInt()
-                ).toString()
+                currentFrequency = Random.nextLong(
+                    fakeMin,
+                    fakeMax
+                )
             )
         }
     }
