@@ -64,16 +64,21 @@ class DashboardRepositoryImpl @Inject constructor() : DashboardRepository {
 
     private fun loadCoreMinMaxFrequencies(): List<Pair<String, Pair<Long, Long>>> {
         val cpuDir = File(CPU_DEVICES_PATH)
-        return cpuDir.listFiles { file -> file.name.matches(CPU_CORE_REGEX) }
-            ?.mapNotNull { cpuCore ->
-                val minFreq =
-                    readFile("${cpuCore.absolutePath}/$CPU_INFO_MIN_FREQ").toLongOrNull()
-                val maxFreq =
-                    readFile("${cpuCore.absolutePath}/$CPU_INFO_MAX_FREQ").toLongOrNull()
-                if (minFreq != null && maxFreq != null) {
-                    cpuCore.name to (minFreq to maxFreq)
-                } else null
-            } ?: emptyList()
+        val cpuCores = cpuDir.listFiles { file -> file.name.matches(CPU_CORE_REGEX) }
+            ?: return emptyList()
+
+        val coreFrequencies = cpuCores.mapNotNull { cpuCore ->
+            val minFreq = readFile("${cpuCore.absolutePath}/$CPU_INFO_MIN_FREQ").toLongOrNull()
+            val maxFreq = readFile("${cpuCore.absolutePath}/$CPU_INFO_MAX_FREQ").toLongOrNull()
+
+            // Only include cores where both min and max frequencies are valid
+            if (minFreq != null && maxFreq != null) {
+                cpuCore.name to (minFreq to maxFreq)
+            } else null
+        }
+
+        // Sort cores in descending order of max frequency
+        return coreFrequencies.sortedBy { it.second.second }
     }
 
     private companion object {
