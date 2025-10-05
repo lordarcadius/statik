@@ -1,10 +1,15 @@
 package com.vipuljha.statik.feature.dashboard.presentation
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -12,9 +17,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.vipuljha.statik.core.util.Helper.formatBytes
-import com.vipuljha.statik.core.util.Helper.formatFreq
 import com.vipuljha.statik.core.util.Helper.formatNetworkSpeed
 import com.vipuljha.statik.core.util.Helper.formatPercentage
+import com.vipuljha.statik.feature.dashboard.presentation.composable.CpuCoreItem
 
 @Composable
 fun DashboardScreen(
@@ -30,13 +35,25 @@ fun DashboardScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(10.dp)
     ) {
-        cores.value.forEach { core ->
-            Text(
-                text = "${core.core} → ${formatFreq(core.currentFrequency)} " +
-                        "(min ${formatFreq(core.minFrequency)}, max ${formatFreq(core.maxFrequency)})"
-            )
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+
+        ) {
+            LazyVerticalGrid(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(12.dp),
+                columns = GridCells.Adaptive(minSize = 138.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
+                items(cores.value.size) { index ->
+                    CpuCoreItem(core = cores.value[index])
+                }
+            }
         }
 
         Spacer(modifier = Modifier.height(10.dp))
