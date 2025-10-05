@@ -24,6 +24,7 @@ fun DashboardScreen(
     val ramUsage = viewModel.ramUsage.collectAsState()
     val storageUsage = viewModel.storageUsage.collectAsState()
     val batteryUsage = viewModel.batteryUsage.collectAsState()
+    val networkUsage = viewModel.networkUsage.collectAsState()
 
     Column(
         modifier = modifier
@@ -64,5 +65,15 @@ fun DashboardScreen(
         Spacer(modifier = Modifier.height(10.dp))
 
         Text("Battery: ${batteryUsage.value.percentage}% \nCharging: ${batteryUsage.value.isCharging} \nTemperature: ${batteryUsage.value.temperatureCelsius}°C \nVoltage: ${batteryUsage.value.voltage}mV")
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        Text(
+            "Network: ${networkUsage.value.type} \nConnected: ${networkUsage.value.isConnected} \nDownload Speed: ${
+                formatBytes(
+                    networkUsage.value.downloadSpeedBytesPerSec
+                )
+            } \nUpload Speed: ${formatBytes(networkUsage.value.uploadSpeedBytesPerSec)}"
+        )
     }
 }

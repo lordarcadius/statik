@@ -6,9 +6,11 @@ import androidx.lifecycle.viewModelScope
 import com.vipuljha.statik.core.domain.NoParams
 import com.vipuljha.statik.feature.dashboard.domain.model.BatteryUsageModel
 import com.vipuljha.statik.feature.dashboard.domain.model.MemoryUsageModel
+import com.vipuljha.statik.feature.dashboard.domain.model.NetworkUsageModel
 import com.vipuljha.statik.feature.dashboard.domain.model.PerCoreFreqModel
 import com.vipuljha.statik.feature.dashboard.domain.usecase.ObserveBatteryUsageUseCase
 import com.vipuljha.statik.feature.dashboard.domain.usecase.ObserveCpuFrequenciesUseCase
+import com.vipuljha.statik.feature.dashboard.domain.usecase.ObserveNetworkUsageUseCase
 import com.vipuljha.statik.feature.dashboard.domain.usecase.ObserveRamUsageUseCase
 import com.vipuljha.statik.feature.dashboard.domain.usecase.ObserveStorageUsageUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,6 +27,7 @@ class DashboardViewModel @Inject constructor(
     observeRamUsageUseCase: ObserveRamUsageUseCase,
     observeStorageUsageUseCase: ObserveStorageUsageUseCase,
     observeBatteryUsageUseCase: ObserveBatteryUsageUseCase,
+    observeNetworkUsageUseCase: ObserveNetworkUsageUseCase
 ) : ViewModel() {
 
     private val initialMemoryUsage = MemoryUsageModel(
@@ -39,6 +42,13 @@ class DashboardViewModel @Inject constructor(
         isCharging = false,
         temperatureCelsius = 0f,
         voltage = 0
+    )
+
+    private val initialNetworkUsage = NetworkUsageModel(
+        type = "UNKNOWN",
+        isConnected = false,
+        downloadSpeedBytesPerSec = 0,
+        uploadSpeedBytesPerSec = 0
     )
 
     val perCoreFrequencies: StateFlow<List<PerCoreFreqModel>> =
@@ -56,6 +66,10 @@ class DashboardViewModel @Inject constructor(
     val batteryUsage: StateFlow<BatteryUsageModel> =
         observeBatteryUsageUseCase(NoParams)
             .toStateFlow(initialBatteryUsage, "Battery usage")
+
+    val networkUsage: StateFlow<NetworkUsageModel> =
+        observeNetworkUsageUseCase(NoParams)
+            .toStateFlow(initialNetworkUsage, "Network usage")
 
 
     private fun <T> Flow<T>.toStateFlow(

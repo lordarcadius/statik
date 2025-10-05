@@ -2,10 +2,12 @@ package com.vipuljha.statik.feature.dashboard.data.repository
 
 import com.vipuljha.statik.feature.dashboard.data.datasource.BatteryDataSource
 import com.vipuljha.statik.feature.dashboard.data.datasource.CpuDataSource
+import com.vipuljha.statik.feature.dashboard.data.datasource.NetworkDataSource
 import com.vipuljha.statik.feature.dashboard.data.datasource.RamDataSource
 import com.vipuljha.statik.feature.dashboard.data.datasource.StorageDataSource
 import com.vipuljha.statik.feature.dashboard.domain.model.BatteryUsageModel
 import com.vipuljha.statik.feature.dashboard.domain.model.MemoryUsageModel
+import com.vipuljha.statik.feature.dashboard.domain.model.NetworkUsageModel
 import com.vipuljha.statik.feature.dashboard.domain.model.PerCoreFreqModel
 import com.vipuljha.statik.feature.dashboard.domain.repository.DashboardRepository
 import kotlinx.coroutines.flow.Flow
@@ -18,6 +20,7 @@ class DashboardRepositoryImpl @Inject constructor(
     private val ramDataSource: RamDataSource,
     private val storageDataSource: StorageDataSource,
     private val batteryDataSource: BatteryDataSource,
+    private val networkDataSource: NetworkDataSource
 ) : DashboardRepository {
     override fun observerPerCoreFrequency(): Flow<List<PerCoreFreqModel>> {
         return cpuDataSource.observerPerCoreFrequency()
@@ -33,5 +36,9 @@ class DashboardRepositoryImpl @Inject constructor(
 
     override fun observeBatteryInfo(): Flow<BatteryUsageModel> {
         return batteryDataSource.observeBatteryInfo()
+    }
+
+    override fun observeNetworkInfo(): Flow<NetworkUsageModel> {
+        return networkDataSource.observeNetworkInfo()
     }
 }
