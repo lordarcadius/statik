@@ -10,6 +10,7 @@ import com.vipuljha.statik.feature.dashboard.domain.usecase.ObserveCpuFrequencie
 import com.vipuljha.statik.feature.dashboard.domain.usecase.ObserveRamUsageUseCase
 import com.vipuljha.statik.feature.dashboard.domain.usecase.ObserveStorageUsageUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
@@ -22,38 +23,37 @@ class DashboardViewModel @Inject constructor(
     observeRamUsageUseCase: ObserveRamUsageUseCase,
     observeStorageUsageUseCase: ObserveStorageUsageUseCase
 ) : ViewModel() {
+
+    private val initialMemoryUsage = MemoryUsageModel(
+        totalBytes = 0,
+        usedBytes = 0,
+        freeBytes = 0,
+        usedPercentage = 0f
+    )
+
     val perCoreFrequencies: StateFlow<List<PerCoreFreqModel>> =
         observeCpuFrequenciesUseCase(NoParams)
-            .catch { exception ->
-                Log.e(TAG, "Error observing CPU frequency", exception)
-            }
-            .stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(5000),
-                initialValue = emptyList()
-            )
+            .toStateFlow(emptyList(), "CPU frequency")
 
     val ramUsage: StateFlow<MemoryUsageModel> =
         observeRamUsageUseCase(NoParams)
-            .catch { exception ->
-                Log.e(TAG, "Error observing RAM usage", exception)
-            }
-            .stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(5000),
-                initialValue = MemoryUsageModel(0, 0, 0, 0f)
-            )
+            .toStateFlow(initialMemoryUsage, "RAM usage")
 
     val storageUsage: StateFlow<MemoryUsageModel> =
         observeStorageUsageUseCase(NoParams)
-            .catch { exception ->
-                Log.e(TAG, "Error observing storage usage", exception)
-            }
-            .stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(5000),
-                initialValue = MemoryUsageModel(0, 0, 0, 0f)
-            )
+            .toStateFlow(initialMemoryUsage, "Storage usage")
+
+
+    private fun <T> Flow<T>.toStateFlow(
+        initialValue: T,
+        tag: String
+    ): StateFlow<T> = this
+        .catch { exception -> Log.e(TAG, "Error observing $tag", exception) }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = initialValue
+        )
 
     private companion object {
         const val TAG = "DashboardViewModel"
