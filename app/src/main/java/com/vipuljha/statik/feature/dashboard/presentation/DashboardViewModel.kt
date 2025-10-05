@@ -30,26 +30,7 @@ class DashboardViewModel @Inject constructor(
     observeNetworkUsageUseCase: ObserveNetworkUsageUseCase
 ) : ViewModel() {
 
-    private val initialMemoryUsage = MemoryUsageModel(
-        totalBytes = 0,
-        usedBytes = 0,
-        freeBytes = 0,
-        usedPercentage = 0f
-    )
-
-    private val initialBatteryUsage = BatteryUsageModel(
-        percentage = 0,
-        isCharging = false,
-        temperatureCelsius = 0f,
-        voltage = 0
-    )
-
-    private val initialNetworkUsage = NetworkUsageModel(
-        type = "UNKNOWN",
-        isConnected = false,
-        downloadSpeed = 0,
-        uploadSpeed = 0
-    )
+    private val initialMemoryUsage = MemoryUsageModel()
 
     val perCoreFrequencies: StateFlow<List<PerCoreFreqModel>> =
         observeCpuFrequenciesUseCase(NoParams)
@@ -65,11 +46,11 @@ class DashboardViewModel @Inject constructor(
 
     val batteryUsage: StateFlow<BatteryUsageModel> =
         observeBatteryUsageUseCase(NoParams)
-            .toStateFlow(initialBatteryUsage, "Battery usage")
+            .toStateFlow(BatteryUsageModel(), "Battery usage")
 
     val networkUsage: StateFlow<NetworkUsageModel> =
         observeNetworkUsageUseCase(NoParams)
-            .toStateFlow(initialNetworkUsage, "Network usage")
+            .toStateFlow(NetworkUsageModel(), "Network usage")
 
 
     private fun <T> Flow<T>.toStateFlow(
