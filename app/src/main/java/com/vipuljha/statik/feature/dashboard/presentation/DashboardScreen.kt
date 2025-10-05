@@ -1,7 +1,9 @@
 package com.vipuljha.statik.feature.dashboard.presentation
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,6 +22,7 @@ fun DashboardScreen(
 ) {
     val cores = viewModel.perCoreFrequencies.collectAsState()
     val ramUsage = viewModel.ramUsage.collectAsState()
+    val storageUsage = viewModel.storageUsage.collectAsState()
 
     Column(
         modifier = modifier
@@ -33,12 +36,28 @@ fun DashboardScreen(
             )
         }
 
+        Spacer(modifier = Modifier.height(10.dp))
+
         Text(
-            "Total RAM: ${formatBytes(ramUsage.value.totalRam)} \nUsed RAM: ${formatBytes(ramUsage.value.usedRam)} \nFree RAM: ${
+            "Total RAM: ${formatBytes(ramUsage.value.totalBytes)} \nUsed RAM: ${formatBytes(ramUsage.value.usedBytes)} \nFree RAM: ${
                 formatBytes(
-                    ramUsage.value.freeRam
+                    ramUsage.value.freeBytes
                 )
             } \nUsed Percentage: ${formatPercentage(ramUsage.value.usedPercentage)}"
+        )
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        Text(
+            "Total Storage: ${formatBytes(storageUsage.value.totalBytes)}\nUsed Storage: ${
+                formatBytes(
+                    storageUsage.value.usedBytes
+                )
+            }\nFree Storage: ${formatBytes(storageUsage.value.freeBytes)}\nUsed Percentage: ${
+                formatPercentage(
+                    storageUsage.value.usedPercentage
+                )
+            }"
         )
     }
 }

@@ -3,7 +3,7 @@ package com.vipuljha.statik.feature.dashboard.data.datasource
 import android.app.ActivityManager
 import android.content.Context
 import com.vipuljha.statik.core.util.Constants.REALTIME_DATA_FETCH_DELAY
-import com.vipuljha.statik.feature.dashboard.domain.model.RamUsageModel
+import com.vipuljha.statik.feature.dashboard.domain.model.MemoryUsageModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.currentCoroutineContext
@@ -14,7 +14,9 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.isActive
 import java.io.File
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class RamDataSource @Inject constructor(
     @param:ApplicationContext private val context: Context
 ) {
@@ -23,7 +25,7 @@ class RamDataSource @Inject constructor(
         getTotalRam()
     }
 
-    fun observeRamInfo(): Flow<RamUsageModel> = flow {
+    fun observeRamInfo(): Flow<MemoryUsageModel> = flow {
         while (currentCoroutineContext().isActive) {
             emit(getRamInfo())
             delay(REALTIME_DATA_FETCH_DELAY)
@@ -51,7 +53,7 @@ class RamDataSource @Inject constructor(
     }
 
     /** Returns real-time RAM usage */
-    private fun getRamInfo(): RamUsageModel {
+    private fun getRamInfo(): MemoryUsageModel {
         val activityManager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
         val memInfo = ActivityManager.MemoryInfo()
         activityManager.getMemoryInfo(memInfo)
@@ -62,10 +64,10 @@ class RamDataSource @Inject constructor(
             (usedRam.toDouble() / totalRamBytes * 100).toFloat()
         else 0f
 
-        return RamUsageModel(
-            totalRam = totalRamBytes,
-            usedRam = usedRam,
-            freeRam = freeRam,
+        return MemoryUsageModel(
+            totalBytes = totalRamBytes,
+            usedBytes = usedRam,
+            freeBytes = freeRam,
             usedPercentage = usedPercentage
         )
     }

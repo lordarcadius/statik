@@ -4,10 +4,11 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vipuljha.statik.core.domain.NoParams
+import com.vipuljha.statik.feature.dashboard.domain.model.MemoryUsageModel
 import com.vipuljha.statik.feature.dashboard.domain.model.PerCoreFreqModel
-import com.vipuljha.statik.feature.dashboard.domain.model.RamUsageModel
 import com.vipuljha.statik.feature.dashboard.domain.usecase.ObserveCpuFrequenciesUseCase
 import com.vipuljha.statik.feature.dashboard.domain.usecase.ObserveRamUsageUseCase
+import com.vipuljha.statik.feature.dashboard.domain.usecase.ObserveStorageUsageUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -18,7 +19,8 @@ import javax.inject.Inject
 @HiltViewModel
 class DashboardViewModel @Inject constructor(
     observeCpuFrequenciesUseCase: ObserveCpuFrequenciesUseCase,
-    observeRamUsageUseCase: ObserveRamUsageUseCase
+    observeRamUsageUseCase: ObserveRamUsageUseCase,
+    observeStorageUsageUseCase: ObserveStorageUsageUseCase
 ) : ViewModel() {
     val perCoreFrequencies: StateFlow<List<PerCoreFreqModel>> =
         observeCpuFrequenciesUseCase(NoParams)
@@ -31,7 +33,7 @@ class DashboardViewModel @Inject constructor(
                 initialValue = emptyList()
             )
 
-    val ramUsage: StateFlow<RamUsageModel> =
+    val ramUsage: StateFlow<MemoryUsageModel> =
         observeRamUsageUseCase(NoParams)
             .catch { exception ->
                 Log.e(TAG, "Error observing RAM usage", exception)
@@ -39,7 +41,18 @@ class DashboardViewModel @Inject constructor(
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(5000),
-                initialValue = RamUsageModel(0, 0, 0, 0f)
+                initialValue = MemoryUsageModel(0, 0, 0, 0f)
+            )
+
+    val storageUsage: StateFlow<MemoryUsageModel> =
+        observeStorageUsageUseCase(NoParams)
+            .catch { exception ->
+                Log.e(TAG, "Error observing storage usage", exception)
+            }
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5000),
+                initialValue = MemoryUsageModel(0, 0, 0, 0f)
             )
 
     private companion object {
