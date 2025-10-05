@@ -9,7 +9,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.vipuljha.statik.core.util.Helper.formatBytes
 import com.vipuljha.statik.core.util.Helper.formatFreq
+import com.vipuljha.statik.core.util.Helper.formatPercentage
 
 @Composable
 fun DashboardScreen(
@@ -17,6 +19,7 @@ fun DashboardScreen(
     viewModel: DashboardViewModel = hiltViewModel<DashboardViewModel>()
 ) {
     val cores = viewModel.perCoreFrequencies.collectAsState()
+    val ramUsage = viewModel.ramUsage.collectAsState()
 
     Column(
         modifier = modifier
@@ -29,5 +32,13 @@ fun DashboardScreen(
                         "(min ${formatFreq(core.minFrequency)}, max ${formatFreq(core.maxFrequency)})"
             )
         }
+
+        Text(
+            "Total RAM: ${formatBytes(ramUsage.value.totalRam)} \nUsed RAM: ${formatBytes(ramUsage.value.usedRam)} \nFree RAM: ${
+                formatBytes(
+                    ramUsage.value.freeRam
+                )
+            } \nUsed Percentage: ${formatPercentage(ramUsage.value.usedPercentage)}"
+        )
     }
 }

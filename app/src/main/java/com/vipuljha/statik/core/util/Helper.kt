@@ -3,10 +3,16 @@ package com.vipuljha.statik.core.util
 import android.os.Build
 import com.vipuljha.statik.feature.dashboard.domain.model.PerCoreFreqModel
 import java.io.File
+import java.text.DecimalFormat
 import java.util.Locale
+import kotlin.math.ln
+import kotlin.math.pow
 import kotlin.random.Random
+import kotlin.math.roundToInt
 
 object Helper {
+
+    private val decimalFormat by lazy { DecimalFormat("#.##") }
     fun formatFreq(freq: Long): String {
         return try {
             val khz = freq
@@ -67,5 +73,19 @@ object Helper {
         } catch (e: Exception) {
             "0"
         }
+    }
+
+    fun formatBytes(bytes: Long): String {
+        if (bytes < 1024) return "$bytes B"
+
+        val units = arrayOf("B", "KB", "MB", "GB", "TB")
+        val digitGroups = (ln(bytes.toDouble()) / ln(1024.0)).toInt()
+        val value = bytes / 1024.0.pow(digitGroups.toDouble())
+
+        return "${decimalFormat.format(value)} ${units[digitGroups]}"
+    }
+
+    fun formatPercentage(value: Float): String {
+        return "${value.roundToInt()}%"
     }
 }

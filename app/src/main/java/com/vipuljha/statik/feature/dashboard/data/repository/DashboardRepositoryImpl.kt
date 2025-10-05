@@ -1,12 +1,16 @@
 package com.vipuljha.statik.feature.dashboard.data.repository
 
+import android.app.ActivityManager
+import android.content.Context
 import com.vipuljha.statik.core.util.Constants.CPU_CORE_REGEX
 import com.vipuljha.statik.core.util.Constants.REALTIME_DATA_FETCH_DELAY
 import com.vipuljha.statik.core.util.Helper.getFakeEmulatorFreqData
 import com.vipuljha.statik.core.util.Helper.isEmulator
 import com.vipuljha.statik.core.util.Helper.readFile
 import com.vipuljha.statik.feature.dashboard.domain.model.PerCoreFreqModel
+import com.vipuljha.statik.feature.dashboard.domain.model.RamUsageModel
 import com.vipuljha.statik.feature.dashboard.domain.repository.DashboardRepository
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
@@ -19,17 +23,31 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class DashboardRepositoryImpl @Inject constructor() : DashboardRepository {
+class DashboardRepositoryImpl @Inject constructor(
+    @param:ApplicationContext private val context: Context
+) : DashboardRepository {
 
     // Cache min/max values once at startup because they will never change
     private val cachedCoreMinMax: List<Pair<String, Pair<Long, Long>>> by lazy {
         loadCoreMinMaxFrequencies()
     }
 
+    // Cache total RAM once since it doesn't change
+    private val totalRamBytes: Long by lazy {
+        getTotalRam()
+    }
+
     override fun observerPerCoreFrequency(): Flow<List<PerCoreFreqModel>> = flow {
         while (currentCoroutineContext().isActive) {
             val data = getRealTimePerCoreFrequency()
             emit(data)
+            delay(REALTIME_DATA_FETCH_DELAY)
+        }
+    }.flowOn(Dispatchers.IO)
+
+    override fun observeRamInfo(): Flow<RamUsageModel> = flow {
+        while (currentCoroutineContext().isActive) {
+            emit(getRamInfo())
             delay(REALTIME_DATA_FETCH_DELAY)
         }
     }.flowOn(Dispatchers.IO)
@@ -79,6 +97,46 @@ class DashboardRepositoryImpl @Inject constructor() : DashboardRepository {
 
         // Sort cores in descending order of max frequency
         return coreFrequencies.sortedBy { it.second.second }
+    }
+
+    private fun getTotalRam(): Long {
+        return try {
+            val activityManager =
+                context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+            val memInfo = ActivityManager.MemoryInfo()
+            activityManager.getMemoryInfo(memInfo)
+
+            // For older APIs, fallback to /proc/meminfo
+            if (memInfo.totalMem > 0) {
+                memInfo.totalMem
+            } else {
+                val memInfoFile = File("/proc/meminfo")
+                val firstLine = memInfoFile.useLines { it.firstOrNull() }
+                firstLine?.replace(Regex("\\D+"), "")?.toLongOrNull()?.times(1024) ?: 0L
+            }
+        } catch (e: Exception) {
+            0L
+        }
+    }
+
+    /** Returns real-time RAM usage */
+    private fun getRamInfo(): RamUsageModel {
+        val activityManager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        val memInfo = ActivityManager.MemoryInfo()
+        activityManager.getMemoryInfo(memInfo)
+
+        val freeRam = memInfo.availMem
+        val usedRam = totalRamBytes - freeRam
+        val usedPercentage = if (totalRamBytes > 0)
+            (usedRam.toDouble() / totalRamBytes * 100).toFloat()
+        else 0f
+
+        return RamUsageModel(
+            totalRam = totalRamBytes,
+            usedRam = usedRam,
+            freeRam = freeRam,
+            usedPercentage = usedPercentage
+        )
     }
 
     private companion object {

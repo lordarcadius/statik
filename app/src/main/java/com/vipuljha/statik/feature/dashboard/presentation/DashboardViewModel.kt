@@ -5,7 +5,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vipuljha.statik.core.domain.NoParams
 import com.vipuljha.statik.feature.dashboard.domain.model.PerCoreFreqModel
+import com.vipuljha.statik.feature.dashboard.domain.model.RamUsageModel
 import com.vipuljha.statik.feature.dashboard.domain.usecase.ObserveCpuFrequenciesUseCase
+import com.vipuljha.statik.feature.dashboard.domain.usecase.ObserveRamUsageUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -15,7 +17,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DashboardViewModel @Inject constructor(
-    observeCpuFrequenciesUseCase: ObserveCpuFrequenciesUseCase
+    observeCpuFrequenciesUseCase: ObserveCpuFrequenciesUseCase,
+    observeRamUsageUseCase: ObserveRamUsageUseCase
 ) : ViewModel() {
     val perCoreFrequencies: StateFlow<List<PerCoreFreqModel>> =
         observeCpuFrequenciesUseCase(NoParams)
@@ -26,6 +29,17 @@ class DashboardViewModel @Inject constructor(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(5000),
                 initialValue = emptyList()
+            )
+
+    val ramUsage: StateFlow<RamUsageModel> =
+        observeRamUsageUseCase(NoParams)
+            .catch { exception ->
+                Log.e(TAG, "Error observing RAM usage", exception)
+            }
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5000),
+                initialValue = RamUsageModel(0, 0, 0, 0f)
             )
 
     private companion object {
