@@ -47,8 +47,8 @@ class DashboardViewModel @Inject constructor(
     private val initialNetworkUsage = NetworkUsageModel(
         type = "UNKNOWN",
         isConnected = false,
-        downloadSpeedBytesPerSec = 0,
-        uploadSpeedBytesPerSec = 0
+        downloadSpeed = 0,
+        uploadSpeed = 0
     )
 
     val perCoreFrequencies: StateFlow<List<PerCoreFreqModel>> =

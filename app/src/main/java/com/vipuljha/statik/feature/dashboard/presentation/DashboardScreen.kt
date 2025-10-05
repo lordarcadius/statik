@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.vipuljha.statik.core.util.Helper.formatBytes
 import com.vipuljha.statik.core.util.Helper.formatFreq
+import com.vipuljha.statik.core.util.Helper.formatNetworkSpeed
 import com.vipuljha.statik.core.util.Helper.formatPercentage
 
 @Composable
@@ -70,10 +71,10 @@ fun DashboardScreen(
 
         Text(
             "Network: ${networkUsage.value.type} \nConnected: ${networkUsage.value.isConnected} \nDownload Speed: ${
-                formatBytes(
-                    networkUsage.value.downloadSpeedBytesPerSec
+                formatNetworkSpeed(
+                    networkUsage.value.downloadSpeed
                 )
-            } \nUpload Speed: ${formatBytes(networkUsage.value.uploadSpeedBytesPerSec)}"
+            } \nUpload Speed: ${formatNetworkSpeed(networkUsage.value.uploadSpeed)}"
         )
     }
 }

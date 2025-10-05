@@ -2,5 +2,5 @@ package com.vipuljha.statik.core.util
 
 object Constants {
     const val REALTIME_DATA_FETCH_DELAY = 400L
-    val CPU_CORE_REGEX = Regex("cpu[0-9]+")
+    const val INTERNET_SPEED_FETCH_DELAY = 1500L
 }

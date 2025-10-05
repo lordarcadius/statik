@@ -1,6 +1,5 @@
 package com.vipuljha.statik.feature.dashboard.data.datasource
 
-import com.vipuljha.statik.core.util.Constants.CPU_CORE_REGEX
 import com.vipuljha.statik.core.util.Constants.REALTIME_DATA_FETCH_DELAY
 import com.vipuljha.statik.core.util.Helper.getFakeEmulatorFreqData
 import com.vipuljha.statik.core.util.Helper.isEmulator
@@ -84,5 +83,6 @@ class CpuDataSource @Inject constructor() {
         const val CPU_SCALING_CURRENT_FREQ = "cpufreq/scaling_cur_freq"
         const val CPU_INFO_MIN_FREQ = "cpufreq/cpuinfo_min_freq"
         const val CPU_INFO_MAX_FREQ = "cpufreq/cpuinfo_max_freq"
+        val CPU_CORE_REGEX = Regex("cpu[0-9]+")
     }
 }

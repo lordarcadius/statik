@@ -88,4 +88,12 @@ object Helper {
     fun formatPercentage(value: Float): String {
         return "${value.roundToInt()}%"
     }
+
+    fun formatNetworkSpeed(bytesPerSec: Long): String {
+        return when {
+            bytesPerSec >= 1_048_576 -> "${(bytesPerSec / 1_048_576f).toInt()} MB/s"
+            bytesPerSec >= 1024 -> "${(bytesPerSec / 1024f).toInt()} KB/s"
+            else -> "$bytesPerSec B/s"
+        }
+    }
 }
