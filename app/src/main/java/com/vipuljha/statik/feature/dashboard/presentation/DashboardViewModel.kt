@@ -4,8 +4,10 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vipuljha.statik.core.domain.NoParams
+import com.vipuljha.statik.feature.dashboard.domain.model.BatteryUsageModel
 import com.vipuljha.statik.feature.dashboard.domain.model.MemoryUsageModel
 import com.vipuljha.statik.feature.dashboard.domain.model.PerCoreFreqModel
+import com.vipuljha.statik.feature.dashboard.domain.usecase.ObserveBatteryUsageUseCase
 import com.vipuljha.statik.feature.dashboard.domain.usecase.ObserveCpuFrequenciesUseCase
 import com.vipuljha.statik.feature.dashboard.domain.usecase.ObserveRamUsageUseCase
 import com.vipuljha.statik.feature.dashboard.domain.usecase.ObserveStorageUsageUseCase
@@ -21,7 +23,8 @@ import javax.inject.Inject
 class DashboardViewModel @Inject constructor(
     observeCpuFrequenciesUseCase: ObserveCpuFrequenciesUseCase,
     observeRamUsageUseCase: ObserveRamUsageUseCase,
-    observeStorageUsageUseCase: ObserveStorageUsageUseCase
+    observeStorageUsageUseCase: ObserveStorageUsageUseCase,
+    observeBatteryUsageUseCase: ObserveBatteryUsageUseCase,
 ) : ViewModel() {
 
     private val initialMemoryUsage = MemoryUsageModel(
@@ -29,6 +32,13 @@ class DashboardViewModel @Inject constructor(
         usedBytes = 0,
         freeBytes = 0,
         usedPercentage = 0f
+    )
+
+    private val initialBatteryUsage = BatteryUsageModel(
+        percentage = 0,
+        isCharging = false,
+        temperatureCelsius = 0f,
+        voltage = 0
     )
 
     val perCoreFrequencies: StateFlow<List<PerCoreFreqModel>> =
@@ -42,6 +52,10 @@ class DashboardViewModel @Inject constructor(
     val storageUsage: StateFlow<MemoryUsageModel> =
         observeStorageUsageUseCase(NoParams)
             .toStateFlow(initialMemoryUsage, "Storage usage")
+
+    val batteryUsage: StateFlow<BatteryUsageModel> =
+        observeBatteryUsageUseCase(NoParams)
+            .toStateFlow(initialBatteryUsage, "Battery usage")
 
 
     private fun <T> Flow<T>.toStateFlow(

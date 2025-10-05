@@ -23,6 +23,7 @@ fun DashboardScreen(
     val cores = viewModel.perCoreFrequencies.collectAsState()
     val ramUsage = viewModel.ramUsage.collectAsState()
     val storageUsage = viewModel.storageUsage.collectAsState()
+    val batteryUsage = viewModel.batteryUsage.collectAsState()
 
     Column(
         modifier = modifier
@@ -59,5 +60,9 @@ fun DashboardScreen(
                 )
             }"
         )
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        Text("Battery: ${batteryUsage.value.percentage}% \nCharging: ${batteryUsage.value.isCharging} \nTemperature: ${batteryUsage.value.temperatureCelsius}°C \nVoltage: ${batteryUsage.value.voltage}mV")
     }
 }
