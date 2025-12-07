@@ -1,16 +1,10 @@
 package com.vipuljha.statik.navigation
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Android
-import androidx.compose.material.icons.filled.Apps
-import androidx.compose.material.icons.filled.BatteryFull
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Memory
-import androidx.compose.material.icons.filled.Sensors
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -64,41 +58,37 @@ sealed interface Route : NavKey {
 
     // Information tab destinations (inside Information)
     @Serializable
-    sealed interface InfoTabDestination : RootDestination {
+    sealed interface InfoTabDestination : Route {
+        val label: String
+
         @Serializable
         data object Hardware : InfoTabDestination {
             override val label: String = "Hardware"
-            override val icon: ImageVector = Icons.Filled.Memory
         }
 
         @Serializable
         data object Software : InfoTabDestination {
             override val label: String = "Software"
-            override val icon: ImageVector = Icons.Filled.Apps
         }
 
         @Serializable
         data object Battery : InfoTabDestination {
             override val label: String = "Battery"
-            override val icon: ImageVector = Icons.Filled.BatteryFull
         }
 
         @Serializable
         data object Sensors : InfoTabDestination {
             override val label: String = "Sensors"
-            override val icon: ImageVector = Icons.Filled.Sensors
         }
 
         @Serializable
         data object Network : InfoTabDestination {
             override val label: String = "Network"
-            override val icon: ImageVector = Icons.Filled.Wifi
         }
 
         @Serializable
         data object Apps : InfoTabDestination {
             override val label: String = "Apps"
-            override val icon: ImageVector = Icons.Filled.Android
         }
     }
 }
