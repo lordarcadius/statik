@@ -125,4 +125,8 @@ dependencies {
 
     //Charts
     implementation (libs.compose.charts)
+
+    // Navigation3
+    implementation(libs.androidx.navigation3.runtime)
+    implementation(libs.androidx.navigation3.ui)
 }

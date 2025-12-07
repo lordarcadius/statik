@@ -1,9 +1,10 @@
 package com.vipuljha.statik.navigation
 
+import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.Serializable
 
 @Serializable
-sealed interface Route {
+sealed interface Route : NavKey {
 
     // Top-level routes
     @Serializable
