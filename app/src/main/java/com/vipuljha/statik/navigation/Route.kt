@@ -5,9 +5,13 @@ import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -141,6 +145,22 @@ class TopLevelBackStack<T : Any>(startKey: T) {
         topLevelStacks.remove(removedKey)
         topLevelKey = topLevelStacks.keys.last()
         updateBackStack()
+    }
+}
+
+@Composable
+fun <T : Any> rememberTopLevelBackStack(
+    destinations: List<T>,
+    startDestination: T = destinations.first()
+): TopLevelBackStack<T> {
+    val saver = remember(destinations, startDestination) {
+        Saver<TopLevelBackStack<T>, Int>(
+            save = { backStack -> destinations.indexOf(backStack.topLevelKey) },
+            restore = { index -> TopLevelBackStack(destinations.getOrElse(index) { startDestination }) }
+        )
+    }
+    return rememberSaveable(saver = saver) {
+        TopLevelBackStack(startDestination)
     }
 }
 

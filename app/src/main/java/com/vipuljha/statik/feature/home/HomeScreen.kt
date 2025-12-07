@@ -12,13 +12,10 @@ import com.vipuljha.statik.feature.information.InformationScreen
 import com.vipuljha.statik.feature.settings.SettingScreen
 import com.vipuljha.statik.feature.tools.ToolScreen
 import com.vipuljha.statik.navigation.Route
-import com.vipuljha.statik.navigation.TopLevelBackStack
+import com.vipuljha.statik.navigation.rememberTopLevelBackStack
 
 @Composable
 fun HomeScreen() {
-    val bottomNavBackStack =
-        remember { TopLevelBackStack<Route.RootDestination>(Route.RootDestination.Dashboard) }
-
     val bottomNavItems = remember {
         listOf(
             Route.RootDestination.Dashboard,
@@ -28,6 +25,7 @@ fun HomeScreen() {
         )
     }
 
+    val bottomNavBackStack = rememberTopLevelBackStack(bottomNavItems)
     Scaffold(
         bottomBar = {
             BottomNavigationBar(
