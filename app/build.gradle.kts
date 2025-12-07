@@ -92,9 +92,6 @@ dependencies {
     //Icons
     implementation(libs.androidx.material.icons.extended)
 
-    //Navigation
-    implementation(libs.androidx.navigation.compose)
-
     //Datastore
     implementation(libs.androidx.datastore.preferences)
 

@@ -5,18 +5,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Android
-import androidx.compose.material.icons.filled.BatteryFull
-import androidx.compose.material.icons.filled.Memory
-import androidx.compose.material.icons.filled.Storage
-import androidx.compose.material3.ScrollableTabRow
+import androidx.compose.material3.SecondaryScrollableTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import com.vipuljha.statik.core.domain.model.NavItemModel
 import com.vipuljha.statik.feature.information.tabs.AppsTab
 import com.vipuljha.statik.feature.information.tabs.BatteryTab
 import com.vipuljha.statik.feature.information.tabs.HardwareTab
@@ -26,6 +20,13 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun InformationScreen(modifier: Modifier = Modifier) {
+
+    val infoTabItems = listOf(
+        Route.InfoTabDestination.Hardware,
+        Route.InfoTabDestination.Software,
+        Route.InfoTabDestination.Battery,
+        Route.InfoTabDestination.Apps
+    )
     val pagerState = rememberPagerState { infoTabItems.size }
     val scope = rememberCoroutineScope()
 
@@ -34,7 +35,7 @@ fun InformationScreen(modifier: Modifier = Modifier) {
     }
 
     Column(modifier = modifier.fillMaxSize()) {
-        ScrollableTabRow(selectedTabIndex = pagerState.currentPage) {
+        SecondaryScrollableTabRow(selectedTabIndex = pagerState.currentPage) {
             infoTabItems.forEachIndexed { index, item ->
                 Tab(
                     selected = pagerState.currentPage == index,
@@ -48,7 +49,7 @@ fun InformationScreen(modifier: Modifier = Modifier) {
             state = pagerState,
             modifier = Modifier.fillMaxSize()
         ) { page ->
-            when (infoTabItems[page].route) {
+            when (infoTabItems[page]) {
                 Route.InfoTabDestination.Hardware -> HardwareTab()
                 Route.InfoTabDestination.Software -> SoftwareTab()
                 Route.InfoTabDestination.Battery -> BatteryTab()
@@ -58,10 +59,3 @@ fun InformationScreen(modifier: Modifier = Modifier) {
         }
     }
 }
-
-private val infoTabItems = listOf(
-    NavItemModel(Route.InfoTabDestination.Hardware, "Hardware", Icons.Filled.Memory),
-    NavItemModel(Route.InfoTabDestination.Software, "Software", Icons.Filled.Storage),
-    NavItemModel(Route.InfoTabDestination.Battery, "Battery", Icons.Filled.BatteryFull),
-    NavItemModel(Route.InfoTabDestination.Apps, "Apps", Icons.Filled.Android)
-)
